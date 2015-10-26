@@ -159,10 +159,13 @@ Type 'yes' to continue, or 'no' to cancel: """ % (database_name,))
 
             if engine == 'postgis':
                 # fetch postgis template name if it exists
-                from django.contrib.gis.db.backends.postgis.creation import PostGISCreation
-                postgis_template = PostGISCreation(connection).template_postgis
-                if postgis_template is not None:
-                    create_query += ' TEMPLATE = %s' % postgis_template
+                try:
+                    from django.contrib.gis.db.backends.postgis.creation import PostGISCreation
+                    postgis_template = PostGISCreation(connection).template_postgis
+                    if postgis_template is not None:
+                        create_query += ' TEMPLATE = %s' % postgis_template
+                except (ImportError, AttributeError):
+                    pass
 
             if settings.DEFAULT_TABLESPACE:
                 create_query += ' TABLESPACE = %s;' % settings.DEFAULT_TABLESPACE
